@@ -1,9 +1,11 @@
+const { App } = require('@slack/bolt');
 const puppeteer = require("puppeteer");
 const cron = require("node-cron");
 const $ = require("cheerio");
 const fs = require('fs');
 const url =
   "https://www.amazon.com/Dell-27-Inch-LED-Lit-Monitor-S2719DGF/dp/B00N2L5CXO/ref=sr_1_1?dchild=1&keywords=dell+27+inch+monitor+2k+gaming+monitor&qid=1604973653&sr=8-1";
+
 
 async function configureBrowser() {
   console.log("Webscraping has started...")
@@ -29,6 +31,7 @@ async function checkPrice(page) {
       result = "No sale for you:" + info + dollarPrice;
     }
   });
+  //writing to json file
  fs.writeFile('./prices.json',JSON.stringify(result), err => err ? console.log(err) : null);
 }
 
@@ -38,6 +41,26 @@ async function startTracking() {
 }
 
 startTracking();
+
+//Slack app 
+ 
+const app = new App({
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  token: process.env.SLACK_BOT_TOKEN,
+});
+ 
+/* Add functionality here */
+ 
+(async () => {
+  // Start the app
+  await app.start(process.env.PORT || 3000);
+ 
+  console.log('⚡️ Bolt app is running!');
+})();
+
+
+
+
 
 //Below is time keeping function and CRON Scheduler
 
